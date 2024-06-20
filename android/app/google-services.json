@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "21903278566",
+    "project_id": "newtest-ad138",
+    "storage_bucket": "newtest-ad138.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:21903278566:android:d3e8a66229ef4f4f091627",
+        "android_client_info": {
+          "package_name": "com.example.aboditest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6mU2DQAL1jaB3KR30xPQXBCUF0Y-F3Ds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
