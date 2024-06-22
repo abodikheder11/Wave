@@ -3,10 +3,8 @@ import 'package:aboditest/presentation/widgets/message_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
-import 'package:record/record.dart';
 
 import '../../bloc/Chat_Bloc/chat_bloc.dart';
 import '../../bloc/Messaging/messaging_bloc.dart';
@@ -34,9 +32,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
   final Map<int, GlobalKey> _messageKeys = {};
   bool _isSearchVisible = false;
   TextEditingController searchController = TextEditingController();
-  int _searchMessageIndex = -1;
-  bool _isRecording = false;
-  final Record _audioRecorder = Record();
+  final int _searchMessageIndex = -1;
   List<Message> messages = [];
   VoiceMessageProvider voiceMessageProvider = VoiceMessageProvider();
 
@@ -62,14 +58,14 @@ class _ConversationScreenState extends State<ConversationScreen> {
     await Permission.storage.request();
   }
 
-  Future<String> _getFilePath() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final filePath =
-        '${directory.path}/audio_${DateTime
-        .now()
-        .millisecondsSinceEpoch}.m4a';
-    return filePath;
-  }
+  // Future<String> _getFilePath() async {
+  //   final directory = await getApplicationDocumentsDirectory();
+  //   final filePath =
+  //       '${directory.path}/audio_${DateTime
+  //       .now()
+  //       .millisecondsSinceEpoch}.m4a';
+  //   return filePath;
+  // }
   Future<void> _startVoiceRecording(BuildContext context) async {
     final voiceMessageProvider = Provider.of<VoiceMessageProvider>(context, listen: false);
     await voiceMessageProvider.startRecording();
@@ -98,9 +94,7 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
 
   void _filterMessages() {
-    final query = searchController.text.toLowerCase();
     setState(() {
-      // Update filtered messages
     });
     if (_searchMessageIndex != -1) {
       _scrollToMessage(_searchMessageIndex);
@@ -111,15 +105,15 @@ class _ConversationScreenState extends State<ConversationScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         _scrollController.animateTo(index * 72.0,
-            duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+            duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
       }
     });
   }
-
-  bool _shouldHighlightMessage(String messageText) {
-    final query = searchController.text.toLowerCase();
-    return query.isNotEmpty && messageText.toLowerCase().contains(query);
-  }
+  //
+  // bool _shouldHighlightMessage(String messageText) {
+  //   final query = searchController.text.toLowerCase();
+  //   return query.isNotEmpty && messageText.toLowerCase().contains(query);
+  // }
 
   void _sendMessage(BuildContext context) {
     final text = messageController.text;
@@ -152,8 +146,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   OverlayEntry _createOverlayEntry(BuildContext context, int messageIndex) {
     final key = _messageKeys[messageIndex];
-    if (key == null || key.currentContext == null)
+    if (key == null || key.currentContext == null) {
       return OverlayEntry(builder: (_) => Container());
+    }
 
     final renderBox = key.currentContext!.findRenderObject() as RenderBox;
     final offset = renderBox.localToGlobal(Offset.zero);
@@ -218,7 +213,6 @@ class _ConversationScreenState extends State<ConversationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final voiceMessageProvider = Provider.of<VoiceMessageProvider>(context);
 
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
@@ -255,9 +249,9 @@ class _ConversationScreenState extends State<ConversationScreen> {
                 child: TextField(
                   decoration: InputDecoration(
                     hintText: 'Search messages',
-                    prefixIcon: Icon(Icons.search),
+                    prefixIcon: const Icon(Icons.search),
                     suffixIcon: IconButton(
-                      icon: Icon(Icons.close),
+                      icon: const Icon(Icons.close),
                       onPressed: () {
                         setState(() {
                           _isSearchVisible = false;

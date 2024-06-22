@@ -1,5 +1,3 @@
-import 'dart:ui';
-import 'package:aboditest/presentation/screens/home_page.dart';
 import 'package:aboditest/presentation/themes/app_theme.dart';
 import 'package:aboditest/presentation/themes/theme.dart';
 import 'package:aboditest/presentation/widgets/splash_screen.dart';

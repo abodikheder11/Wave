@@ -28,8 +28,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,

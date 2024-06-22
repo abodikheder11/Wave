@@ -2,9 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:vibration/vibration.dart';
-import '../../utils/voice_Message_Recorder.dart';
 
 class MessageInput extends StatefulWidget {
   final TextEditingController messageController;
