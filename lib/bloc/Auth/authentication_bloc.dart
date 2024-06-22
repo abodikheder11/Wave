@@ -38,7 +38,7 @@ class AuthenticationBloc
     }
   }
 
-  String authenticationUrl = "";
+  String authenticationUrl = "https://6e52-62-112-9-244.ngrok-free.app/api/endpoint";
 
     Future<bool> _isAuthenticated(String userId) async {
       try {
