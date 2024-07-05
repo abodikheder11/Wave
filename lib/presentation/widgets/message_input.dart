@@ -10,7 +10,7 @@ class MessageInput extends StatefulWidget {
   final Function onAttachFilePressed;
   final Function onImagePressed;
   final Function onEmojiPickerPressed;
-  final Function(bool) onVoiceMessageClosed; // Updated to accept a boolean parameter
+  final Function(bool) onVoiceMessageClosed;
   final Function onVoiceMessageStarted;
   final bool isRecording;
 
@@ -68,7 +68,7 @@ class _MessageInputState extends State<MessageInput> {
       children: [
         Expanded(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 8, left: 3),
+            padding: const EdgeInsets.only(bottom: 8, left: 8),
             child: TextField(
               controller: widget.messageController,
               decoration: InputDecoration(
@@ -80,28 +80,9 @@ class _MessageInputState extends State<MessageInput> {
                   borderRadius: BorderRadius.circular(35),
                   borderSide: isDarkMode ? BorderSide.none : BorderSide(color: Color(0xffE0E0E0)),
                 ),
-                contentPadding: EdgeInsets.zero,
+                contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 fillColor: isDarkMode ? Color(0xFF1C2A32) : Colors.white,
                 filled: true,
-                prefixIcon: widget.isRecording ? Padding(
-                  padding: const EdgeInsets.only(right: 8, bottom: 7),
-                  child: Text(
-                    _formatDuration(_recordDuration),
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 16,
-                    ),
-                  ),
-                ) : Padding(
-                  padding: const EdgeInsets.only(right: 8, bottom: 7),
-                  child: Text(
-                    _formatDuration(_recordDuration),
-                    style: TextStyle(
-                      color: isDarkMode ? Colors.white : Colors.black,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -122,13 +103,13 @@ class _MessageInputState extends State<MessageInput> {
                       },
                       onLongPressMoveUpdate: (details) {
                         if (details.localPosition.dx < -50) {
-                          widget.onVoiceMessageClosed(true); // Cancel recording if dragged left
+                          widget.onVoiceMessageClosed(true);
                           _stopTimer();
                         }
                       },
                       onLongPressEnd: (_) async {
                         if (widget.isRecording) {
-                          await widget.onVoiceMessageClosed(false); // Send recording if released
+                          await widget.onVoiceMessageClosed(false);
                           _stopTimer();
                         }
                       },

@@ -1,76 +1,65 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:bloc/bloc.dart';
-// ignore: depend_on_referenced_packages
-import 'package:meta/meta.dart';
-import 'package:http/http.dart' as http;
+import '../../data/services/user_repo.dart';
+import 'authentication_event.dart';
+import 'authentication_state.dart';
 
-part 'authentication_event.dart';
-part 'authentication_state.dart';
+class AuthenticationBloc extends Bloc<AuthenticationEvent, AuthenticationState> {
+  final UserRepository userRepository;
 
-class AuthenticationBloc
-    extends Bloc<AuthenticationEvent, AuthenticationState> {
-  AuthenticationBloc() : super(AuthenticationInitial());
+  AuthenticationBloc({required this.userRepository}) : super(AuthenticationInitial()) {
+    on<AuthenticationStarted>(_onAuthenticationStarted);
+    on<AuthenticationLoggedIn>(_onAuthenticationLoggedIn);
+    on<AuthenticationLoggedOut>(_onAuthenticationLoggedOut);
+    on<AuthenticationSignedUp>(_onAuthenticationSignedUp);
+  }
 
-  Stream<AuthenticationState> mapEventToState(
-      AuthenticationEvent event,
-      ) async* {
-    if (event is AuthenticationStarted) {
-      final bool isAuthenticated = await _isAuthenticated(event.userId);
-      if (isAuthenticated) {
-        yield* _mapFetchRegisteredUsersToState(event.userId);
-      } else {
-        yield AuthenticationFailure(error: "Not authenticated");
-      }
-    } else if (event is AuthenticationLoggedIn) {
-      yield AuthenticationSuccess(userId: event.userId);
-    } else if (event is AuthenticationLoggedOut) {
-      yield AuthenticationInitial();
+  Future<void> _onAuthenticationStarted(
+      AuthenticationStarted event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationInitial());
+  }
+
+  Future<void> _onAuthenticationLoggedIn(
+      AuthenticationLoggedIn event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoading());
+    try {
+      final userId = await userRepository.login(
+        username: event.username,
+        password: event.password,
+      );
+      emit(AuthenticationAuthenticated(userId: userId));
+    } catch (error) {
+      emit(AuthenticationFailure(error: error.toString()));
     }
   }
 
-  Stream<AuthenticationState> _mapFetchRegisteredUsersToState(String userId,) async* {
+  Future<void> _onAuthenticationLoggedOut(
+      AuthenticationLoggedOut event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoading());
     try {
-      final List<String> registeredUserEmails = await _fetchRegisteredUsers(userId);
-      yield RegisteredUsersLoaded(registeredUserEmails);
-    } catch (e) {
-      yield AuthenticationFailure(error: "Failed to fetch registered users: $e");
+      await userRepository.logout();
+      emit(AuthenticationUnauthenticated());
+    } catch (error) {
+      emit(AuthenticationFailure(error: error.toString()));
     }
   }
 
-  String authenticationUrl = "https://6e52-62-112-9-244.ngrok-free.app/api/endpoint";
-
-    Future<bool> _isAuthenticated(String userId) async {
-      try {
-        final url = Uri.parse('$authenticationUrl?userId=$userId');
-        final response = await http.get(url);
-
-        if (response.statusCode == 200) {
-          final Map<String, dynamic> data = json.decode(response.body);
-          return data['isAuthenticated'] as bool;
-        } else {
-          throw Exception('Failed to authenticate user');
-        }
-      } catch (e) {
-        return false;
-      }
-    }
-
-
-  Future<List<String>> _fetchRegisteredUsers(String userId) async {
+  Future<void> _onAuthenticationSignedUp(
+      AuthenticationSignedUp event, Emitter<AuthenticationState> emit) async {
+    emit(AuthenticationLoading());
     try {
-      final url = Uri.parse('$authenticationUrl?userId=$userId');
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        final List<String> registeredUserNumbers =
-        data.map((user) => user['id'].toString()).toList();
-        return registeredUserNumbers;
-      } else {
-        throw Exception('Failed to fetch registered user data');
-      }
-    } catch (e) {
-      throw Exception('Error fetching registered user data: $e');
+      final userId = await userRepository.signup(
+        fullName: event.fullName,
+        username: event.username,
+        email: event.email,
+        phoneNumber: event.phoneNumber,
+        password: event.password,
+        confPassword: event.confPassword,
+        gender: event.gender,
+      );
+      emit(AuthenticationAuthenticated(userId: userId));
+    } catch (error) {
+      emit(AuthenticationFailure(error: error.toString()));
     }
   }
 }

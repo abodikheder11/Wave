@@ -1,8 +1,12 @@
+import 'package:aboditest/bloc/Auth/authentication_bloc.dart';
+import 'package:aboditest/bloc/Auth/authentication_event.dart';
+import 'package:aboditest/presentation/screens/log_in_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:aboditest/presentation/screens/conversation_screen.dart';
 import 'package:aboditest/presentation/screens/settings.dart';
 import 'package:aboditest/presentation/screens/user_profile.dart';
 import 'package:aboditest/data/models/conversation.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'about.dart';
 import 'contacts-list.dart';
@@ -119,6 +123,10 @@ class _HomePageState extends State<HomePage> {
               if (choice == 'Profile') {
                 Navigator.push(context, MaterialPageRoute(builder: (c) => UserProfileScreen()));
               }
+              if (choice == 'Logout') {
+                BlocProvider.of<AuthenticationBloc>(context).add(AuthenticationLoggedOut());
+                Navigator.push(context, MaterialPageRoute(builder: (c)=>LoginScreen()));
+              }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
@@ -132,6 +140,10 @@ class _HomePageState extends State<HomePage> {
               const PopupMenuItem<String>(
                 value: 'About',
                 child: Text('About'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'Logout',
+                child: Text('Logout'),
               ),
             ],
           ),

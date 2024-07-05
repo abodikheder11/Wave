@@ -1,6 +1,7 @@
+import 'package:aboditest/presentation/screens/home_page.dart';
 import 'package:aboditest/presentation/screens/sign_up_screen.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -9,11 +10,11 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with SingleTickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
 
+  @override
   void initState() {
     super.initState();
 
@@ -26,9 +27,26 @@ class _SplashScreenState extends State<SplashScreen>
 
     _animation.addStatusListener((status) {
       if (status == AnimationStatus.completed) {
-        Navigator.push(context, MaterialPageRoute(builder: (x) => SignUpScreen()));
+        _checkLoginStatus();
       }
     });
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+
+    if (isLoggedIn) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } else {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SignUpScreen()),
+      );
+    }
   }
 
   @override
@@ -43,7 +61,11 @@ class _SplashScreenState extends State<SplashScreen>
       body: FadeTransition(
         opacity: _animation,
         child: Center(
-          child: SizedBox(width: 300 , height: 300,child: Image.asset('images/wave.png' ,scale: 10,)),
+          child: SizedBox(
+            width: 300,
+            height: 300,
+            child: Image.asset('images/wave.png', scale: 10),
+          ),
         ),
       ),
     );

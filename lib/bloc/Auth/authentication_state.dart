@@ -1,26 +1,32 @@
-// authentication_state.dart
+import 'package:equatable/equatable.dart';
 
-part of 'authentication_bloc.dart';
+abstract class AuthenticationState extends Equatable {
+  const AuthenticationState();
 
-@immutable
-abstract class AuthenticationState {}
+  @override
+  List<Object> get props => [];
+}
 
 class AuthenticationInitial extends AuthenticationState {}
 
-class AuthenticationSuccess extends AuthenticationState {
+class AuthenticationLoading extends AuthenticationState {}
+
+class AuthenticationAuthenticated extends AuthenticationState {
   final String userId;
 
-  AuthenticationSuccess({required this.userId});
+  const AuthenticationAuthenticated({required this.userId});
+
+  @override
+  List<Object> get props => [userId];
 }
+
+class AuthenticationUnauthenticated extends AuthenticationState {}
 
 class AuthenticationFailure extends AuthenticationState {
   final String error;
 
-  AuthenticationFailure({required this.error});
-}
+  const AuthenticationFailure({required this.error});
 
-class RegisteredUsersLoaded extends AuthenticationState {
-  final List<String> registeredUserNumbers;
-
-  RegisteredUsersLoaded(this.registeredUserNumbers);
+  @override
+  List<Object> get props => [error];
 }
